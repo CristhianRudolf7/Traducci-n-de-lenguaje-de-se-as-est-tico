@@ -1,74 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hand Landmarks with MediaPipe</title>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-  <style>
-    canvas { position: absolute; left: 0; top: 0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Cámara (Frame Alternado)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #camera-container {
+            width: 80%;
+            max-width: 500px;
+            max-height: 500px;
+            border: 2px solid #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            display: none; /* Ocultamos el video inicialmente */
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-  <video class="input_video" style="display: none;"></video>
-  <canvas class="output_canvas"></canvas>
+    <div id="camera-container">
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+    </div>
 
-  <script>
-    const videoElement = document.querySelector('.input_video');
-    const canvasElement = document.querySelector('.output_canvas');
-    const canvasCtx = canvasElement.getContext('2d');
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        let frameCount = 0; // Contador para alternar los frames
 
-    async function main() {
-      // Configuración de MediaPipe Hands
-      const hands = new Hands({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      });
-      hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-      });
+        // Pedir acceso a la cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
 
-      hands.onResults(onResults);
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    drawFrame(); // Comienza la captura de frames
+                };
+            })
+            .catch(error => {
+                console.error("Error al acceder a la cámara:", error);
+            });
 
-      // Configurar la cámara
-      const camera = new Camera(videoElement, {
-        onFrame: async () => {
-          await hands.send({image: videoElement});
-        },
-        width: 640,
-        height: 480
-      });
-      camera.start();
-    }
+        function drawFrame() {
+            frameCount++;
+            
+            // Alternar: si el contador es par, dibuja el frame, si es impar, salta el frame
+            if (frameCount % 2 === 0) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            } else {
+                // Limpia el canvas en el frame impar
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
 
-    function onResults(results) {
-      // Limpiar el canvas
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-      // Dibujar la imagen del video
-      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-      // Dibujar puntos de la mano
-      if (results.multiHandLandmarks) {
-        for (const landmarks of results.multiHandLandmarks) {
-          for (let i = 0; i < landmarks.length; i++) {
-            const x = landmarks[i].x * canvasElement.width;
-            const y = landmarks[i].y * canvasElement.height;
-
-            // Dibujar un punto para cada landmark
-            canvasCtx.beginPath();
-            canvasCtx.arc(x, y, 5, 0, 2 * Math.PI);
-            canvasCtx.fillStyle = "red";
-            canvasCtx.fill();
-          }
+            requestAnimationFrame(drawFrame); // Continua capturando los frames
         }
-      }
-    }
-
-    main();
-  </script>
+    </script>
 </body>
 </html>

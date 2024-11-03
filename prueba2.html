@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mostrar Cámara (Frame Alternado)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <style>
         body {
             display: flex;
@@ -36,44 +38,69 @@
 </head>
 <body>
     <div id="camera-container">
-        <video id="video" autoplay></video>
-        <canvas id="canvas"></canvas>
+        <video id="input_video" autoplay></video>
+        <canvas id="output_canvas"></canvas>
     </div>
 
     <script>
-        const video = document.getElementById("video");
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        let frameCount = 0; // Contador para alternar los frames
-
-        // Pedir acceso a la cámara
+        const videoElement = document.getElementById('input_video'); // Cambio aquí
+        const canvasElement = document.getElementById('output_canvas'); // Cambio aquí
+        const canvasCtx = canvasElement.getContext('2d');
+        
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
-                video.srcObject = stream;
-                video.play();
+                videoElement.srcObject = stream;
+                videoElement.play();
 
-                video.onloadedmetadata = () => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    drawFrame(); // Comienza la captura de frames
+                videoElement.onloadedmetadata = () => {
+                    canvasElement.width = videoElement.videoWidth;
+                    canvasElement.height = videoElement.videoHeight;
+                    main(); // Comienza la captura de frames
                 };
             })
             .catch(error => {
                 console.error("Error al acceder a la cámara:", error);
             });
 
-        function drawFrame() {
-            frameCount++;
-            
-            // Alternar: si el contador es par, dibuja el frame, si es impar, salta el frame
-            if (frameCount % 2 === 0) {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            } else {
-                // Limpia el canvas en el frame impar
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
+        async function main() {
+            const hands = new Hands({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            });
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
 
-            requestAnimationFrame(drawFrame); // Continua capturando los frames
+            hands.onResults(onResults);
+
+            const camera = new Camera(videoElement, {
+                onFrame: async () => {
+                    await hands.send({image: videoElement});
+                },
+                width: 640,
+                height: 480
+            });
+            camera.start();
+        }
+
+        function onResults(results) {
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            if (results.multiHandLandmarks) {
+                for (const landmarks of results.multiHandLandmarks) {
+                    for (let i = 0; i < landmarks.length; i++) {
+                        const x = landmarks[i].x * canvasElement.width;
+                        const y = landmarks[i].y * canvasElement.height;
+                        canvasCtx.beginPath();
+                        canvasCtx.arc(x, y, 5, 0, 2 * Math.PI);
+                        canvasCtx.fillStyle = "red";
+                        canvasCtx.fill();
+                    }
+                }
+            }
         }
     </script>
 </body>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Manos en Tiempo Real</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #output_canvas {
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+        #info {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detección de Manos en Tiempo Real con MediaPipe</h1>
+    
+    <!-- Video y Canvas para mostrar imagen y puntos -->
+    <video id="input_video" style="display: none;"></video>
+    <canvas id="output_canvas"></canvas>
+    
+    <!-- Información de detección -->
+    <div id="info">Manos detectadas: 0</div>
+
+    <script>
+        // Inicializar elementos de la página
+        const videoElement = document.getElementById("input_video");
+        const canvas = document.getElementById("output_canvas");
+        const ctx = canvas.getContext("2d");
+        const info = document.getElementById("info");
+
+        // Inicializar el modelo de MediaPipe Hands
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+        });
+        hands.setOptions({
+            maxNumHands: 2,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.7,
+            minTrackingConfidence: 0.7,
+        });
+
+        hands.onResults(onResults);
+
+        // Función para mostrar puntos de la mano en el canvas
+        function onResults(results) {
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            // Dibujar el video en el canvas
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Dibujar puntos de las manos detectadas
+            results.multiHandLandmarks.forEach((landmarks) => {
+                landmarks.forEach((point) => {
+                    ctx.beginPath();
+                    ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                });
+            });
+
+            // Mostrar cantidad de manos detectadas
+            info.textContent = `Manos detectadas: ${results.multiHandLandmarks.length}`;
+        }
+
+        // Configurar la cámara
+        const camera = new Camera(videoElement, {
+            onFrame: async () => {
+                await hands.send({ image: videoElement });
+            },
+            width: 640,
+            height: 480,
+        });
+        camera.start();
+    </script>
+</body>
+</html>

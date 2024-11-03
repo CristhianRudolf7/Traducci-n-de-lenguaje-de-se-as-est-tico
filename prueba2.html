@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Cámara (Frame Alternado)</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #camera-container {
+            width: 80%;
+            max-width: 500px;
+            max-height: 500px;
+            border: 2px solid #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            display: none; /* Ocultamos el video inicialmente */
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="camera-container">
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        let frameCount = 0; // Contador para alternar los frames
+
+        // Pedir acceso a la cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    drawFrame(); // Comienza la captura de frames
+                };
+            })
+            .catch(error => {
+                console.error("Error al acceder a la cámara:", error);
+            });
+
+        function drawFrame() {
+            frameCount++;
+            
+            // Alternar: si el contador es par, dibuja el frame, si es impar, salta el frame
+            if (frameCount % 2 === 0) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            } else {
+                // Limpia el canvas en el frame impar
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            requestAnimationFrame(drawFrame); // Continua capturando los frames
+        }
+    </script>
+</body>
+</html>

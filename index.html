@@ -32,7 +32,7 @@
 
         #top-bar h1 {
             font-size: 1.5rem;
-            color: #f9a825; /* Color de ejemplo */
+            color: #4FC3F7; /* Color de ejemplo */
             margin: 0;
         }
 
@@ -43,15 +43,15 @@
         .options {
             padding: 8px;
             cursor: pointer;
-            background-color: #f9a825; /* Color para botones */
-            color: #333;
+            background-color: #1daef1; /* Color para botones */
+            color: #ffffff;
             border-radius: 5px;
             font-size: 0.9rem;
             transition: background-color 0.3s ease;
         }
 
         .options:hover {
-            background-color: #ffd95a; /* Color al pasar el cursor */
+            background-color: #97d6f3; /* Color al pasar el cursor */
         }
 
         #main-content {
@@ -68,7 +68,10 @@
         }
         canvas {
             width: 100%;
-            height: auto;
+            height: 100%;
+            max-width: 100%; /* Asegura que el canvas no sea más grande que el contenedor */
+            max-height: 100%; /* Asegura que el canvas no sea más alto que el contenedor */
+            display: block;
         }
         /* Contenedor de video */
         #video-container {
@@ -217,6 +220,7 @@
         const video = document.getElementById("video");
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
+        const videoContainer = document.getElementById("video-container");
 
         // Pedir acceso a la cámara
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -226,14 +230,18 @@
 
                 // Establecer el tamaño del canvas al tamaño del video
                 video.onloadedmetadata = () => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
+                    resizeCanvas();
                     startVideoStream();
                 };
             })
             .catch(error => {
                 console.error("Error al acceder a la cámara:", error);
             });
+        
+        function resizeCanvas() {
+            canvas.width = videoContainer.clientWidth;
+            canvas.height = videoContainer.clientHeight;
+        }
 
         // Función para dibujar el video en el canvas
         function startVideoStream() {
@@ -278,6 +286,7 @@
         // Llama a la función cuando se carga la página y cuando se redimensiona la ventana
         window.addEventListener("load", adjustTopBar);
         window.addEventListener("resize", adjustTopBar);
+        window.addEventListener("resize", resizeCanvas);
     </script>
 </body>
 </html>

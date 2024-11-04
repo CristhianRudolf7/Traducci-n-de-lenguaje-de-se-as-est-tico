@@ -28,7 +28,7 @@
         video {
             width: 100%;
             height: auto;
-            display: none; /* Ocultamos el video inicialmente */
+            display: none; /* Ocultamos el video ya que solo usaremos el canvas */
         }
         canvas {
             width: 100%;
@@ -46,7 +46,6 @@
         const video = document.getElementById("video");
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        let frameCount = 0; // Contador para alternar los frames
 
         // Pedir acceso a la cámara
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -54,28 +53,24 @@
                 video.srcObject = stream;
                 video.play();
 
+                // Establecer el tamaño del canvas al tamaño del video
                 video.onloadedmetadata = () => {
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
-                    drawFrame(); // Comienza la captura de frames
+                    startVideoStream();
                 };
             })
             .catch(error => {
                 console.error("Error al acceder a la cámara:", error);
             });
 
-        function drawFrame() {
-            frameCount++;
-            
-            // Alternar: si el contador es par, dibuja el frame, si es impar, salta el frame
-            if (frameCount % 2 === 0) {
+        // Función para dibujar el video en el canvas
+        function startVideoStream() {
+            function drawFrame() {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            } else {
-                // Limpia el canvas en el frame impar
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                requestAnimationFrame(drawFrame); // Llama a la función de nuevo en el siguiente frame
             }
-
-            requestAnimationFrame(drawFrame); // Continua capturando los frames
+            drawFrame(); // Inicia el ciclo de dibujo
         }
     </script>
 </body>

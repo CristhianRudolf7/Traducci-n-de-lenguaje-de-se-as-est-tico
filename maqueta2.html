@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maqueta 2</title>
+    <style>
+        /* Estilos generales */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Estilos para la barra de navegación */
+        #top-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #333;
+            padding: 10px 20px;
+            color: white;
+        }
+        
+        #top-bar img {
+            width: 50px;
+            height: 50px;
+        }
+        
+        #top-bar h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        #top-bar h1 span {
+            color: #f39c12; /* Color distintivo para la marca */
+        }
+
+        /* Estilos para las opciones de la barra de navegación */
+        .options {
+            margin: 0 10px;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #f9a825; /* Color para botones */
+            color: #333;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .options:hover {
+            background-color: #ffd95a; /* Color al pasar el cursor */
+        }
+
+        /* Estilos para el diseño responsivo */
+        @media (max-width: 600px) {
+            #top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #top-bar h1 {
+                font-size: 20px;
+            }
+
+            .options {
+                width: 100%;
+                text-align: center;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra superior -->
+    <div id="top-bar">
+        <img src="{{ url_for('static', filename='imagenes/senala.jpg') }}" alt="Logo SeñaIA">
+        <h1>Señal<span>IA</span></h1>
+        
+        <div class="options" onclick="location.href='/bi'">Traducir de texto a señas</div>
+        <div class="options" onclick="location.href='/'">Traducir de señas a texto</div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div id="main-content">
+        <div id="video-container">
+            <img id="video-stream" src="{{ url_for('video_feed') }}" alt="Video Stream">
+        </div>
+
+        <div id="text-container">
+            <div id="prediction-bar">Predicción: Esperando...</div>
+            <button id="clear-button">Borrar texto</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -19,6 +19,11 @@
             color: #fff;
             font-family: Arial, sans-serif;
         }
+        .header-container {
+            display: flex;
+            align-items: center; /* Centra verticalmente la imagen y el título */
+            gap: 10px; /* Espacio entre la imagen y el título */
+        }
 
         #top-bar img {
             height: 50px;
@@ -189,10 +194,8 @@
 <body>
     <!-- Barra superior -->
     <div id="top-bar">
-        <div class="header-container">
-            <img src="{{ url_for('static', filename='imagenes/senala.jpg') }}" alt="Logo SeñaIA">
-            <h1>Señal<span>IA</span></h1>
-        </div>
+        <img src="{{ url_for('static', filename='imagenes/senala.jpg') }}" alt="Logo SeñaIA">
+        <h1>Señal<span>IA</span></h1>
         
         <div class="options" onclick="location.href='/bi'">Traducir de texto a señas</div>
         <div class="options" onclick="location.href='/'">Traducir de señas a texto</div>
@@ -240,6 +243,41 @@
             }
             drawFrame(); // Inicia el ciclo de dibujo
         }
+
+        function adjustTopBar() {
+            const topBar = document.getElementById("top-bar");
+            const img = topBar.querySelector("img");
+            const h1 = topBar.querySelector("h1");
+
+            // Verifica si el ancho de la pantalla es menor o igual a 768px
+            if (window.innerWidth <= 768) {
+                // Si ya existe .header-container, no hace nada
+                if (!topBar.querySelector(".header-container")) {
+                    // Crea un nuevo contenedor para la imagen y el título
+                    const headerContainer = document.createElement("div");
+                    headerContainer.className = "header-container";
+                    
+                    // Mueve la imagen y el título dentro del nuevo contenedor
+                    headerContainer.appendChild(img);
+                    headerContainer.appendChild(h1);
+
+                    // Inserta el nuevo contenedor al inicio de #top-bar
+                    topBar.insertBefore(headerContainer, topBar.firstChild);
+                }
+            } else {
+                // Si la pantalla es mayor a 768px, restaura la estructura original
+                const headerContainer = topBar.querySelector(".header-container");
+                if (headerContainer) {
+                    topBar.insertBefore(img, headerContainer);
+                    topBar.insertBefore(h1, headerContainer);
+                    topBar.removeChild(headerContainer);
+                }
+            }
+        }
+
+        // Llama a la función cuando se carga la página y cuando se redimensiona la ventana
+        window.addEventListener("load", adjustTopBar);
+        window.addEventListener("resize", adjustTopBar);
     </script>
 </body>
 </html>

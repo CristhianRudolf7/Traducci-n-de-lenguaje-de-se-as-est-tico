@@ -38,8 +38,7 @@
 
         async function main() {
             try {
-                const featuresInput = document.getElementById('features').value;
-                const inputData = featuresInput.split(',').map(Number);
+                const inputData = [150,167,152,157,109,126,173,176,177,173,176,176,172,176,176,72.7308];
 
                 if (inputData.length !== 16) {
                     document.getElementById('result').innerText = "Por favor, ingrese exactamente 16 valores.";

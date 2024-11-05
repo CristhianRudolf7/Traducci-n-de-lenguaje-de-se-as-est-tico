@@ -4,75 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Predicción con Extra Trees</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 <body>
     <h2>Predicción con Extra Trees</h2>
     <form id="predictionForm">
         <label for="features">Ingrese los 16 valores separados por comas:</label><br>
         <input type="text" id="features" name="features" required><br><br>
-        <button type="button" onclick="handlePrediction()">Hacer Predicción</button>
+        <button type="button" onclick="main()">Hacer Predicción</button>
     </form>
     
     <h3>Resultado:</h3>
-    <p id="result"></p>
+    <p id="result" color="ffffff"></p>
 
     <script>
-        //150,167,152,157,109,126,173,176,177,173,176,176,172,176,176,72.7308
-        // Función para cargar el modelo desde el archivo JSON
-        const loadModel = async () => {
-            const response = await fetch('./extra_trees_model.json');
-            return response.json();
-        };
+         async function loadModel() {
+            const session = await ort.InferenceSession.create('./extra_trees_model.onnx');
+            return session;
+        }
 
-        // Función para hacer una predicción
-        const predict = async (inputFeatures) => {
-            const modelData = await loadModel();
-            const { estimators } = modelData;
-            const predictions = [];
+        async function runInference(session, inputData) {
+            const tensorInput = new ort.Tensor('float32', new Float32Array(inputData), [1, inputData.length]);
+            const feeds = { 'float_input': tensorInput };  // Asegúrate de que 'float_input' coincida con el nombre de entrada del modelo ONNX
+            
+            const results = await session.run(feeds);
+            const output = results['output_name']; // Cambia 'output_name' por el nombre real de la salida del modelo
+            const predictionIndex = output.data.indexOf(Math.max(...output.data));
 
-            estimators.forEach((tree) => {
-                let node = 0;
-                while (tree.nodes.children_left[node] !== -1) {
-                    const featureIndex = tree.features[node];
-                    const threshold = tree.thresholds[node];
-                    if (inputFeatures[featureIndex] <= threshold) {
-                        node = tree.nodes.children_left[node];
-                    } else {
-                        node = tree.nodes.children_right[node];
-                    }
-                }
-                const prediction = tree.values[node];
-                predictions.push(prediction);
-            });
-
-            // Sumar todas las predicciones y determinar la clase más votada
-            const votes = Array(26).fill(0);
-            predictions.forEach((pred) => {
-                votes[pred]++;
-            });
-
-            const maxVotes = Math.max(...votes);
             const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', ' '];
-            return labels[votes.indexOf(maxVotes)];
-        };
+            const predictedLabel = labels[predictionIndex];
+            return predictedLabel;
+        }
 
-        // Función para manejar la predicción cuando el usuario ingresa los valores
-        const handlePrediction = async () => {
-            const featuresInput = document.getElementById('features').value;
-            const inputFeatures = featuresInput.split(',').map(Number);
-
-            if (inputFeatures.length !== 16) {
-                document.getElementById('result').innerText = "Por favor, ingrese exactamente 16 valores.";
-                return;
-            }
-
+        async function main() {
             try {
-                const result = await predict(inputFeatures);
-                document.getElementById('result').innerText = `Predicción: ${result}`;
+                const featuresInput = document.getElementById('features').value;
+                const inputData = featuresInput.split(',').map(Number);
+
+                if (inputData.length !== 16) {
+                    document.getElementById('result').innerText = "Por favor, ingrese exactamente 16 valores.";
+                    return;
+                }
+
+                const session = await loadModel();
+                const prediction = await runInference(session, inputData);
+                document.getElementById('result').innerText = `Predicción: ${prediction}`;
             } catch (error) {
-                document.getElementById('result').innerText = "Ocurrió un error al hacer la predicción." + error.name;
+                document.getElementById('result').innerText = `Ocurrió un error al hacer la predicción: ${error.message}`;
             }
-        };
+        }
     </script>
 </body>
 </html>

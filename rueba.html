@@ -1,326 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <style>
-        /* Estilo para top-bar */
-        body {
-            margin: 0;
-        }
-
-        #top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
-        .header-container {
-            display: flex;
-            align-items: center; /* Centra verticalmente la imagen y el título */
-            gap: 10px; /* Espacio entre la imagen y el título */
-        }
-
-        #top-bar img {
-            height: 50px;
-            margin-right: 10px;
-        }
-
-        #top-bar h1 {
-            font-size: 1.5rem;
-            color: #4FC3F7; /* Color de ejemplo */
-            margin: 0;
-        }
-
-        #top-bar h1 span {
-            color: #ffffff; /* Color para la parte de "IA" */
-        }
-
-        .options {
-            padding: 8px;
-            cursor: pointer;
-            background-color: #1daef1; /* Color para botones */
-            color: #ffffff;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .options:hover {
-            background-color: #97d6f3; /* Color al pasar el cursor */
-        }
-
-        #main-content {
-            display: flex; /* Utiliza flexbox para organizar el contenido */
-            justify-content: center; /* Centra los elementos horizontalmente dentro del contenedor */
-            align-items: flex-start; /* Alinea los elementos al inicio verticalmente */
-            padding: 20px; /* Agrega un relleno de 20px alrededor del contenedor */
-            gap: 20px; /* Espacio de 20px entre los elementos dentro del contenedor */
-        }
-        video {
-            width: 100%;
-            height: auto;
-            display: none; /* Ocultamos el video ya que solo usaremos el canvas */
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-            max-width: 100%; /* Asegura que el canvas no sea más grande que el contenedor */
-            max-height: 100%; /* Asegura que el canvas no sea más alto que el contenedor */
-            display: block;
-        }
-        /* Contenedor de video */
-        #video-container {
-            display: flex; /* Alinea el contenido del contenedor en un diseño de flexbox */
-            justify-content: center; /* Centra el contenido horizontalmente */
-            align-items: center; /* Centra el contenido verticalmente */
-            width: 50vw; /* Ocupa el 50% del ancho de la pantalla */
-            height: calc(70vh); /* Ocupa el alto de la pantalla menos 20px para evitar choque con el borde */
-            border: 2px solid #ddd; /* Agrega un borde de 2px color gris claro */
-            padding: 10px; /* Agrega un espacio de 10px alrededor del contenido */
-            background: #1e1e1e; /* Fondo oscuro */
-        }
-        #text-container {
-            display: flex; /* Utiliza flexbox para organizar el contenido */
-            flex-direction: column; /* Coloca los elementos en una columna */
-            align-items: center; /* Centra los elementos horizontalmente */
-            gap: 10px; /* Espacio de 10px entre elementos */
-            width: 50vw; /* Ocupa el 50% del ancho de la pantalla */
-            height: calc(70vh); /* Ocupa el alto de la pantalla menos 20px para evitar choque con el borde */
-        }
-        
-
-        /* Barra de predicción */
-        #prediction-bar {
-            width: 40vw;
-            background-color: white; /* Fondo blanco */
-            color: black; /* Color de texto negro */
-            text-align: center; /* Centra el texto */
-            padding: 10px; /* Espaciado interior de 10px */
-            font-size: 18px; /* Tamaño de fuente del texto */
-            border-radius: 5px; /* Bordes redondeados */
-        }
-
-        /* Botón para borrar el texto */
-        #clear-button {
-            padding: 8px 16px; /* Espaciado interior del botón */
-            font-size: 16px; /* Tamaño de la fuente del texto */
-            cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-            background-color: #FF4C4C; /* Color de fondo rojo */
-            color: white; /* Color de texto blanco */
-            border: none; /* Quita el borde del botón */
-            border-radius: 5px; /* Bordes redondeados */
-        }
-
-        /* Diseño responsivo */
-        @media (max-width: 768px) {
-            #top-bar {
-                display: flex;
-                flex-direction: column;
-                align-items: center; /* Centra los elementos */
-                text-align: center;
-            }
-             /* Contenedor para la imagen y el título */
-            #top-bar .header-container {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: row; /* Coloca la imagen a la izquierda del título */
-                margin-bottom: 10px; /* Espacio inferior para separar del resto */
-            }
-
-
-            #top-bar img {
-                margin-right: 10px; /* Agrega espacio inferior a la imagen */
-            }
-
-            #top-bar h1 {
-                font-size: 1.2rem;
-                margin: 0;
-            }
-
-            .options {
-                width: 97%;
-                text-align: center;
-                margin-bottom: 5px;
-            }
-            #main-content {
-                display: flex; /* Asegura que utiliza flexbox */
-                flex-direction: column; /* Cambia la dirección de los elementos a columna para que se apilen */
-                align-items: center; /* Centra los elementos horizontalmente */
-                padding: 20px; /* Agrega un relleno de 20px alrededor del contenedor */
-            }
-            /* Contenedor de video */
-            #video-container {
-                width: 80vw; /* Ocupa el 50% del ancho de la pantalla */
-                height: calc(40vh); /* Ocupa el alto de la pantalla menos 20px para evitar choque con el borde */
-                border: 2px solid #ddd; /* Agrega un borde de 2px color gris claro */
-            }
-            #text-container {
-                display: flex; /* Utiliza flexbox para organizar el contenido */
-                flex-direction: column; /* Coloca los elementos en una columna */
-                align-items: center; /* Centra los elementos horizontalmente */
-                gap: 10px; /* Espacio de 10px entre elementos */
-                width: 80vw; /* Ocupa el 50% del ancho de la pantalla */
-                height: calc(10vh); /* Ocupa el alto de la pantalla menos 20px para evitar choque con el borde */
-            }
-            
-
-            /* Barra de predicción */
-            #prediction-bar {
-                width: 70vw;
-                background-color: white; /* Fondo blanco */
-                color: black; /* Color de texto negro */
-                text-align: center; /* Centra el texto */
-                padding: 10px; /* Espaciado interior de 10px */
-                font-size: 18px; /* Tamaño de fuente del texto */
-                border-radius: 5px; /* Bordes redondeados */
-            }
-
-            /* Botón para borrar el texto */
-            #clear-button {
-                padding: 8px 16px; /* Espaciado interior del botón */
-                font-size: 16px; /* Tamaño de la fuente del texto */
-                cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-                background-color: #FF4C4C; /* Color de fondo rojo */
-                color: white; /* Color de texto blanco */
-                border: none; /* Quita el borde del botón */
-                border-radius: 5px; /* Bordes redondeados */
-            }
-        }
-    </style>
+    <title>Predicción con Extra Trees</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 <body>
-    <!-- Barra superior -->
-    <div id="top-bar">
-        <img src="static/imagenes/senala.jpg" alt="Logo SeñaIA"/>
-        <h1>Señal<span>IA</span></h1>
-        
-        <div class="options" onclick="location.href='/bi'">Traducir de texto a señas</div>
-        <div class="options" onclick="location.href='/'">Traducir de señas a texto</div>
-    </div>
+    <h2>Predicción con Extra Trees</h2>
+    <form id="predictionForm">
+        <label for="features">Ingrese los 16 valores separados por comas:</label><br>
+        <input type="text" id="features" name="features" required><br><br>
+        <button type="button" onclick="main()">Hacer Predicción</button>
+    </form>
+    
+    <h3>Resultado:</h3>
+    <p id="result" color="ffffff"></p>
 
-    <!-- Contenedor principal -->
-    <div id="main-content">
-        <div id="video-container">
-            <video id="video" autoplay></video>
-            <canvas id="canvas"></canvas>            
-        </div>
-
-        <div id="text-container">
-            <div id="prediction-bar">Predicción: Esperando...</div>
-            <button id="clear-button">Borrar texto</button>
-        </div>
-    </div>
     <script>
-        const video = document.getElementById("video");
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        const videoContainer = document.getElementById("video-container");
-
-        // Pedir acceso a la cámara
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
-
-                // Establecer el tamaño del canvas al tamaño del video
-                video.onloadedmetadata = () => {
-                    resizeCanvas();
-                    startVideoStream();
-                };
-            })
-            .catch(error => {
-                console.error("Error al acceder a la cámara:", error);
-            });
-        
-        function resizeCanvas() {
-            canvas.width = videoContainer.clientWidth;
-            canvas.height = videoContainer.clientHeight;
+         async function loadModel() {
+            const session = await ort.InferenceSession.create('./extra_trees_model.onnx');
+            return session;
         }
 
-        // Función para dibujar el video en el canvas
-        function startVideoStream() {
-            const hands = new Hands({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-            });
-            hands.setOptions({
-                maxNumHands: 2,
-                modelComplexity: 1,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
-            });
-            hands.onResults(onResults);
+        async function runInference(session, inputData) {
+            const tensorInput = new ort.Tensor('float32', new Float32Array(inputData), [1, inputData.length]);
+            const feeds = { 'float_input': tensorInput };  // Asegúrate de que 'float_input' coincida con el nombre de entrada del modelo ONNX
+            
+            const results = await session.run(feeds);
+            const output = results['output_name']; // Cambia 'output_name' por el nombre real de la salida del modelo
+            const predictionIndex = output.data.indexOf(Math.max(...output.data));
 
-            const camera = new Camera(video, {
-                onFrame: async () => {
-                    await hands.send({image: video});
-                },
-                width: 640,
-                height: 480
-            });
-            camera.start();
+            const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', ' '];
+            const predictedLabel = labels[predictionIndex];
+            return predictedLabel;
         }
 
-        function onResults(results) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+        async function main() {
+            try {
+                const inputData = [150,167,152,157,109,126,173,176,177,173,176,176,172,176,176,72.7308];
 
-            if (results.multiHandLandmarks) {
-                for (const landmarks of results.multiHandLandmarks) {
-                    for (let i = 0; i < landmarks.length; i++) {
-                        const x = landmarks[i].x * canvas.width;
-                        const y = landmarks[i].y * canvas.height;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                        ctx.fillStyle = "red";
-                        ctx.fill();
-                    }
+                if (inputData.length !== 16) {
+                    document.getElementById('result').innerText = "Por favor, ingrese exactamente 16 valores.";
+                    return;
                 }
+
+                const session = await loadModel();
+                const prediction = await runInference(session, inputData);
+                document.getElementById('result').innerText = `Predicción: ${prediction}`;
+            } catch (error) {
+                document.getElementById('result').innerText = `Ocurrió un error al hacer la predicción: ${error.message}`;
             }
         }
-
-        function adjustTopBar() {
-            const topBar = document.getElementById("top-bar");
-            const img = topBar.querySelector("img");
-            const h1 = topBar.querySelector("h1");
-
-            // Verifica si el ancho de la pantalla es menor o igual a 768px
-            if (window.innerWidth <= 768) {
-                // Si ya existe .header-container, no hace nada
-                if (!topBar.querySelector(".header-container")) {
-                    // Crea un nuevo contenedor para la imagen y el título
-                    const headerContainer = document.createElement("div");
-                    headerContainer.className = "header-container";
-                    
-                    // Mueve la imagen y el título dentro del nuevo contenedor
-                    headerContainer.appendChild(img);
-                    headerContainer.appendChild(h1);
-
-                    // Inserta el nuevo contenedor al inicio de #top-bar
-                    topBar.insertBefore(headerContainer, topBar.firstChild);
-                }
-            } else {
-                // Si la pantalla es mayor a 768px, restaura la estructura original
-                const headerContainer = topBar.querySelector(".header-container");
-                if (headerContainer) {
-                    topBar.insertBefore(img, headerContainer);
-                    topBar.insertBefore(h1, headerContainer);
-                    topBar.removeChild(headerContainer);
-                }
-            }
-        }
-
-        // Llama a la función cuando se carga la página y cuando se redimensiona la ventana
-        window.addEventListener("load", adjustTopBar);
-        window.addEventListener("resize", adjustTopBar);
-        window.addEventListener("resize", resizeCanvas);
     </script>
 </body>
 </html>

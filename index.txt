@@ -23,8 +23,8 @@
         }
         .header-container {
             display: flex;
-            align-items: center; /* Centra verticalmente la imagen y el tÃ­tulo */
-            gap: 10px; /* Espacio entre la imagen y el tÃ­tulo */
+            align-items: center; /* Centra verticalmente la imagen y el título */
+            gap: 10px; /* Espacio entre la imagen y el título */
         }
 
         #top-bar img {
@@ -71,13 +71,13 @@
         canvas {
             width: 100%;
             height: 100%;
-            max-width: 100%; /* Asegura que el canvas no sea mÃ¡s grande que el contenedor */
-            max-height: 100%; /* Asegura que el canvas no sea mÃ¡s alto que el contenedor */
+            max-width: 100%; /* Asegura que el canvas no sea más grande que el contenedor */
+            max-height: 100%; /* Asegura que el canvas no sea más alto que el contenedor */
             display: block;
         }
         /* Contenedor de video */
         #video-container {
-            display: flex; /* Alinea el contenido del contenedor en un diseÃ±o de flexbox */
+            display: flex; /* Alinea el contenido del contenedor en un diseño de flexbox */
             justify-content: center; /* Centra el contenido horizontalmente */
             align-items: center; /* Centra el contenido verticalmente */
             width: 50vw; /* Ocupa el 50% del ancho de la pantalla */
@@ -96,29 +96,29 @@
         }
         
 
-        /* Barra de predicciÃ³n */
+        /* Barra de predicción */
         #prediction-bar {
             width: 40vw;
             background-color: white; /* Fondo blanco */
             color: black; /* Color de texto negro */
             text-align: center; /* Centra el texto */
             padding: 10px; /* Espaciado interior de 10px */
-            font-size: 18px; /* TamaÃ±o de fuente del texto */
+            font-size: 18px; /* Tamaño de fuente del texto */
             border-radius: 5px; /* Bordes redondeados */
         }
 
-        /* BotÃ³n para borrar el texto */
+        /* Botón para borrar el texto */
         #clear-button {
-            padding: 8px 16px; /* Espaciado interior del botÃ³n */
-            font-size: 16px; /* TamaÃ±o de la fuente del texto */
-            cursor: pointer; /* Cambia el cursor al pasar sobre el botÃ³n */
+            padding: 8px 16px; /* Espaciado interior del botón */
+            font-size: 16px; /* Tamaño de la fuente del texto */
+            cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
             background-color: #FF4C4C; /* Color de fondo rojo */
             color: white; /* Color de texto blanco */
-            border: none; /* Quita el borde del botÃ³n */
+            border: none; /* Quita el borde del botón */
             border-radius: 5px; /* Bordes redondeados */
         }
 
-        /* DiseÃ±o responsivo */
+        /* Diseño responsivo */
         @media (max-width: 768px) {
             #top-bar {
                 display: flex;
@@ -126,12 +126,12 @@
                 align-items: center; /* Centra los elementos */
                 text-align: center;
             }
-             /* Contenedor para la imagen y el tÃ­tulo */
+             /* Contenedor para la imagen y el título */
             #top-bar .header-container {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                flex-direction: row; /* Coloca la imagen a la izquierda del tÃ­tulo */
+                flex-direction: row; /* Coloca la imagen a la izquierda del título */
                 margin-bottom: 10px; /* Espacio inferior para separar del resto */
             }
 
@@ -152,7 +152,7 @@
             }
             #main-content {
                 display: flex; /* Asegura que utiliza flexbox */
-                flex-direction: column; /* Cambia la direcciÃ³n de los elementos a columna para que se apilen */
+                flex-direction: column; /* Cambia la dirección de los elementos a columna para que se apilen */
                 align-items: center; /* Centra los elementos horizontalmente */
                 padding: 20px; /* Agrega un relleno de 20px alrededor del contenedor */
             }
@@ -172,25 +172,25 @@
             }
             
 
-            /* Barra de predicciÃ³n */
+            /* Barra de predicción */
             #prediction-bar {
                 width: 70vw;
                 background-color: white; /* Fondo blanco */
                 color: black; /* Color de texto negro */
                 text-align: center; /* Centra el texto */
                 padding: 10px; /* Espaciado interior de 10px */
-                font-size: 18px; /* TamaÃ±o de fuente del texto */
+                font-size: 18px; /* Tamaño de fuente del texto */
                 border-radius: 5px; /* Bordes redondeados */
             }
 
-            /* BotÃ³n para borrar el texto */
+            /* Botón para borrar el texto */
             #clear-button {
-                padding: 8px 16px; /* Espaciado interior del botÃ³n */
-                font-size: 16px; /* TamaÃ±o de la fuente del texto */
-                cursor: pointer; /* Cambia el cursor al pasar sobre el botÃ³n */
+                padding: 8px 16px; /* Espaciado interior del botón */
+                font-size: 16px; /* Tamaño de la fuente del texto */
+                cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
                 background-color: #FF4C4C; /* Color de fondo rojo */
                 color: white; /* Color de texto blanco */
-                border: none; /* Quita el borde del botÃ³n */
+                border: none; /* Quita el borde del botón */
                 border-radius: 5px; /* Bordes redondeados */
             }
         }
@@ -199,11 +199,11 @@
 <body>
     <!-- Barra superior -->
     <div id="top-bar">
-        <img src="static/imagenes/senala.jpg" alt="Logo SeÃ±aIA"/>
-        <h1>SeÃ±al<span>IA</span></h1>
+        <img src="static/imagenes/senala.jpg" alt="Logo SeñaIA"/>
+        <h1>Señal<span>IA</span></h1>
         
-        <div class="options" onclick="location.href='/bi'">Traducir de texto a seÃ±as</div>
-        <div class="options" onclick="location.href='/'">Traducir de seÃ±as a texto</div>
+        <div class="options" onclick="location.href='/bi'">Traducir de texto a señas</div>
+        <div class="options" onclick="location.href='/'">Traducir de señas a texto</div>
     </div>
 
     <!-- Contenedor principal -->
@@ -214,7 +214,7 @@
         </div>
 
         <div id="text-container">
-            <div id="prediction-bar">PredicciÃ³n: Esperando...</div>
+            <div id="prediction-bar">Predicción: Esperando...</div>
             <button id="clear-button">Borrar texto</button>
         </div>
     </div>
@@ -224,20 +224,20 @@
         const ctx = canvas.getContext("2d");
         const videoContainer = document.getElementById("video-container");
 
-        // Pedir acceso a la cÃ¡mara
+        // Pedir acceso a la cámara
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
                 video.play();
 
-                // Establecer el tamaÃ±o del canvas al tamaÃ±o del video
+                // Establecer el tamaño del canvas al tamaño del video
                 video.onloadedmetadata = () => {
                     resizeCanvas();
                     startVideoStream();
                 };
             })
             .catch(error => {
-                console.error("Error al acceder a la cÃ¡mara:", error);
+                console.error("Error al acceder a la cámara:", error);
             });
         
         function resizeCanvas() {
@@ -245,7 +245,7 @@
             canvas.height = videoContainer.clientHeight;
         }
 
-        // FunciÃ³n para dibujar el video en el canvas
+        // Función para dibujar el video en el canvas
         function startVideoStream() {
             const hands = new Hands({
                 locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -295,11 +295,11 @@
             if (window.innerWidth <= 768) {
                 // Si ya existe .header-container, no hace nada
                 if (!topBar.querySelector(".header-container")) {
-                    // Crea un nuevo contenedor para la imagen y el tÃ­tulo
+                    // Crea un nuevo contenedor para la imagen y el título
                     const headerContainer = document.createElement("div");
                     headerContainer.className = "header-container";
                     
-                    // Mueve la imagen y el tÃ­tulo dentro del nuevo contenedor
+                    // Mueve la imagen y el título dentro del nuevo contenedor
                     headerContainer.appendChild(img);
                     headerContainer.appendChild(h1);
 
@@ -317,7 +317,7 @@
             }
         }
 
-        // Llama a la funciÃ³n cuando se carga la pÃ¡gina y cuando se redimensiona la ventana
+        // Llama a la función cuando se carga la página y cuando se redimensiona la ventana
         window.addEventListener("load", adjustTopBar);
         window.addEventListener("resize", adjustTopBar);
         window.addEventListener("resize", resizeCanvas);
